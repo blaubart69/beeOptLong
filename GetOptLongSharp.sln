@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetOptLongSharp", "GetOptLongSharp\GetOptLongSharp.csproj", "{2BC8D18F-B5E0-4B6D-A60D-84699A24D980}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeeOptLong", "GetOptLongSharp\BeeOptLong.csproj", "{2BC8D18F-B5E0-4B6D-A60D-84699A24D980}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGetOptLong", "TestGetOptLong\TestGetOptLong.csproj", "{73FFB5E6-06C6-4B51-94A2-3336BAD59DA8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{2BC8D18F-B5E0-4B6D-A60D-84699A24D980}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BC8D18F-B5E0-4B6D-A60D-84699A24D980}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2BC8D18F-B5E0-4B6D-A60D-84699A24D980}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73FFB5E6-06C6-4B51-94A2-3336BAD59DA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73FFB5E6-06C6-4B51-94A2-3336BAD59DA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73FFB5E6-06C6-4B51-94A2-3336BAD59DA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73FFB5E6-06C6-4B51-94A2-3336BAD59DA8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
