@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,10 +16,9 @@ namespace TestGetOptLong
             var opts = new BeeOptsBuilder()
                 .GetOpts();
 
-            bool ok = BeeOpts.Parse(
+            IList<string> args = BeeOpts.Parse(
                 new string[] { "a", "b" }, 
                 opts, 
-                out IList<string> args,
                 (optname) => throw new Exception($"unknow {optname}"));
             Assert.AreEqual(2, args.Count);
         }
@@ -31,13 +31,27 @@ namespace TestGetOptLong
                 .Add('a', "add", OPTTYPE.VALUE, "add more args", (v) => a = v)
                 .GetOpts();
 
-            bool ok = BeeOpts.Parse(
+            IList<string> args = BeeOpts.Parse(
                 new string[] { "-a", "b" },
                 opts,
-                out IList<string> args,
                 (optname) => throw new Exception($"unknow {optname}"));
 
-            Assert.IsTrue(ok);
+            Assert.AreEqual("b", a);
+        }
+        [TestMethod]
+        public void OneOptionWithoutSpace()
+        {
+            string a = null;
+
+            var opts = new BeeOptsBuilder()
+                .Add('a', "add", OPTTYPE.VALUE, "add more args", (v) => a = v)
+                .GetOpts();
+
+            IList<string> args = BeeOpts.Parse(
+                new string[] { "-ab" },
+                opts,
+                (optname) => throw new Exception($"unknow {optname}"));
+
             Assert.AreEqual("b", a);
         }
         [TestMethod]
@@ -51,13 +65,11 @@ namespace TestGetOptLong
                 .Add('o', "opt", OPTTYPE.VALUE, "desc", (v) => o = v)
                 .GetOpts();
 
-            bool ok = BeeOpts.Parse(
+            IList<string> args = BeeOpts.Parse(
                 new string[] { "-r", "r", "-o" },
                 opts,
-                out IList<string> args,
                 (optname) => throw new Exception($"unknow {optname}"));
 
-            Assert.IsTrue(ok);
             Assert.AreEqual("r", r);
             Assert.IsNull(o);
         }
@@ -72,13 +84,11 @@ namespace TestGetOptLong
                 .Add('o', "opt", OPTTYPE.VALUE, "optional", (v) => o = v)
                 .GetOpts();
 
-            bool ok = BeeOpts.Parse(
+            IList<string> args = BeeOpts.Parse(
                 new string[] { "-o", "-r", "r" },
                 opts,
-                out IList<string> args,
                 (optname) => throw new Exception($"unknow {optname}"));
 
-            Assert.IsTrue(ok);
             Assert.AreEqual("r", r);
             Assert.IsNull(o);
         }
@@ -93,13 +103,11 @@ namespace TestGetOptLong
                 .Add('o', "opt", OPTTYPE.VALUE, "desc", (v) => o = v)
                 .GetOpts();
 
-            bool ok = BeeOpts.Parse(
+            IList<string> args = BeeOpts.Parse(
                 new string[] { "-o", "-r", "r" },
                 opts,
-                out IList<string> args,
                 (optname) => throw new Exception($"unknow {optname}"));
 
-            Assert.IsTrue(ok);
             Assert.AreEqual("r", r);
             Assert.IsNull(o);
         }
@@ -114,13 +122,11 @@ namespace TestGetOptLong
                 .Add('b', "boo", OPTTYPE.BOOL,  "desc", (v) => b = true)
                 .GetOpts();
 
-            bool ok = BeeOpts.Parse(
+            IList<string> args = BeeOpts.Parse(
                 new string[] { "-brR" },
                 opts,
-                out IList<string> args,
                 (optname) => throw new Exception($"unknow {optname}"));
 
-            Assert.IsTrue(ok);
             Assert.AreEqual("R", r);
             Assert.IsTrue(b);
         }
@@ -135,13 +141,11 @@ namespace TestGetOptLong
                 .Add('b', "boo", OPTTYPE.BOOL, "desc", (v) => b = true)
                 .GetOpts();
 
-            bool ok = BeeOpts.Parse(
+            IList<string> args = BeeOpts.Parse(
                 new string[] { "--boo", "-rR" },
                 opts,
-                out IList<string> args,
                 (optname) => throw new Exception($"unknow option [{optname}]"));
 
-            Assert.IsTrue(ok);
             Assert.AreEqual("R", r);
             Assert.IsTrue(b);
         }
@@ -156,13 +160,11 @@ namespace TestGetOptLong
                 .Add('b', "boo", OPTTYPE.VALUE, "desc", (v) => b = v)
                 .GetOpts();
 
-            bool ok = BeeOpts.Parse(
+            IList<string> args = BeeOpts.Parse(
                 new string[] { "--boo=huu", "-r", "R" },
                 opts,
-                out IList<string> args,
                 (optname) => throw new Exception($"unknow option [{optname}]"));
 
-            Assert.IsTrue(ok);
             Assert.AreEqual("R", r);
             Assert.AreEqual("huu", b);
         }
@@ -177,15 +179,33 @@ namespace TestGetOptLong
                 .Add('b', "boo", OPTTYPE.VALUE, "desc", (v) => b = v)
                 .GetOpts();
 
-            bool ok = BeeOpts.Parse(
+            IList<string> args = BeeOpts.Parse(
                 new string[] { "--boo", "huu", "-r", "R" },
                 opts,
-                out IList<string> args,
                 (optname) => throw new Exception($"unknow option [{optname}]"));
 
-            Assert.IsTrue(ok);
             Assert.AreEqual("R", r);
             Assert.AreEqual("huu", b);
+        }
+        [TestMethod]
+        public void TwoOptions_long_short_with_value_and_one_argument()
+        {
+            string r = null;
+            string b = null;
+
+            var opts = new BeeOptsBuilder()
+                .Add('r', "req", OPTTYPE.VALUE, "desc", (v) => r = v)
+                .Add('b', "boo", OPTTYPE.VALUE, "desc", (v) => b = v)
+                .GetOpts();
+
+            IList<string> args = BeeOpts.Parse(
+                new string[] { "--boo", "huu", "und", "-r", "R" },
+                opts,
+                (optname) => throw new Exception($"unknow option [{optname}]"));
+
+            Assert.AreEqual("R", r);
+            Assert.AreEqual("huu", b);
+            Assert.AreEqual("und", args.First());
         }
     }
 }

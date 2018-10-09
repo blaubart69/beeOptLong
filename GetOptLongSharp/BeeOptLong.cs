@@ -34,10 +34,9 @@ namespace BeeOptLong
             this._wasFound = false;
         }
 
-        public static bool Parse(string[] args, IList<BeeOpts> opts, out IList<string> parsedArgs, OnUnknownOption OnUnknown)
+        public static List<string> Parse(string[] args, IList<BeeOpts> opts, OnUnknownOption OnUnknown)
         {
-            parsedArgs = new List<string>();
-            bool ok = true;
+            List<string> parsedArgs = new List<string>();
 
             int i = 0;
             while (i < args.Length)
@@ -52,7 +51,8 @@ namespace BeeOptLong
                     }
                     else
                     {
-                        // ?? just grab the rest of the args and exit
+                        parsedArgs.AddRange(args.Skip(i + 1));
+                        break;
                     }
                 }
                 else if ( curr.StartsWith("-"))
@@ -73,12 +73,10 @@ namespace BeeOptLong
                 ++i;
             }
 
-            return ok;
+            return parsedArgs;
         }
-        private static bool ParseShort(string[] args, IList<BeeOpts> opts, ref int i, OnUnknownOption OnUnknown)
+        private static void ParseShort(string[] args, IList<BeeOpts> opts, ref int i, OnUnknownOption OnUnknown)
         {
-            bool ok = true;
-
             string currArg = args[i];
             int j = 1;
 
@@ -90,7 +88,6 @@ namespace BeeOptLong
                 if ( foundOpt == null )
                 {
                     OnUnknown(curr.ToString());
-                    ok = false;
                 }
                 else
                 {
@@ -116,7 +113,6 @@ namespace BeeOptLong
                     }
                 }
             }
-            return ok;
         }
         private static void ParseLong(string[] args, IList<BeeOpts> opts, ref int i, OnUnknownOption OnUnknown)
         {
@@ -142,9 +138,11 @@ namespace BeeOptLong
             }
             else
             {
+                foundOpt._wasFound = true;
+
                 if (foundOpt.type == OPTTYPE.BOOL)
                 {
-                    foundOpt.OnOptionCallback(optname);
+                    foundOpt.OnOptionCallback(null);
                 }
                 else if (foundOpt.type == OPTTYPE.VALUE)
                 {
