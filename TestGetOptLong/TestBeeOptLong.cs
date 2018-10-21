@@ -207,5 +207,25 @@ namespace TestGetOptLong
             Assert.AreEqual("huu", b);
             Assert.AreEqual("und", args.First());
         }
+        [TestMethod]
+        public void TwoOptions_long_short_with_value_and_one_argument_3()
+        {
+            string r = "n/a";
+            string b = null;
+
+            var opts = new BeeOptsBuilder()
+                .Add('r', "req", OPTTYPE.VALUE, "desc", (v) => r = v)
+                .Add('b', "boo", OPTTYPE.VALUE, "desc", (v) => b = v)
+                .GetOpts();
+
+            IList<string> args = BeeOpts.Parse(
+                new string[] { "--boo", "huu", "und", "-r" },
+                opts,
+                (optname) => throw new Exception($"unknow option [{optname}]"));
+
+            Assert.IsNull(r);
+            Assert.AreEqual("huu", b);
+            Assert.AreEqual("und", args.First());
+        }
     }
 }

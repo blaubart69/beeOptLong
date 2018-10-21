@@ -19,6 +19,7 @@ namespace BeeOptLong
         public readonly string      optLong;
         public readonly OPTTYPE     type;
         public readonly string      desc;
+
         public readonly OnOption    OnOptionCallback;
 
         private bool _wasFound;
@@ -33,7 +34,6 @@ namespace BeeOptLong
 
             this._wasFound = false;
         }
-
         public static List<string> Parse(string[] args, IList<BeeOpts> opts, OnUnknownOption OnUnknown)
         {
             List<string> parsedArgs = new List<string>();
