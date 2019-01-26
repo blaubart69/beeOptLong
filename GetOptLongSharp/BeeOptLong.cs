@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 
-namespace BeeOptLong
+namespace Spi
 {
     public delegate void OnOption(string value);
     public delegate void OnUnknownOption(string value);
@@ -15,24 +15,36 @@ namespace BeeOptLong
 
     public class BeeOpts
     {
-        public readonly char        opt;
+        public readonly char?        opt;
         public readonly string      optLong;
         public readonly OPTTYPE     type;
         public readonly string      desc;
 
         public readonly OnOption    OnOptionCallback;
 
-        private bool _wasFound;
-
-        public BeeOpts(char opt, string optLong, OPTTYPE type, string desc, OnOption OnOptionCallback)
+        public BeeOpts(char? opt, string optLong, OPTTYPE type, string desc, OnOption OnOptionCallback)
         {
             this.opt = opt;
             this.optLong = optLong;
             this.desc = desc;
             this.type = type;
             this.OnOptionCallback = OnOptionCallback;
-
-            this._wasFound = false;
+        }
+        public static void PrintOptions(IEnumerable<BeeOpts> opts)
+        {
+            /*
+            * Options:
+             -b, --basedir=VALUE        appends this basedir to all filenames in the file
+             -n, --dryrun               show what would be deleted
+             -h, --help                 show this message and exit
+            */
+            foreach ( BeeOpts o in opts )
+            {
+                string OneCharOpt = o.opt.HasValue ? $"-{o.opt.Value}," : "   ";
+                string valueOpt = o.type == OPTTYPE.VALUE ? "=VALUE" : String.Empty;
+                string left = $"  {OneCharOpt} --{o.optLong}{valueOpt}";
+                Console.Error.WriteLine($"{left,-30}{o.desc}");
+            }
         }
         public static List<string> Parse(string[] args, IList<BeeOpts> opts, OnUnknownOption OnUnknown)
         {
@@ -84,15 +96,13 @@ namespace BeeOptLong
             {
                 char curr = currArg[j];
 
-                BeeOpts foundOpt = opts.FirstOrDefault(o => o.opt == curr);
+                BeeOpts foundOpt = opts.FirstOrDefault(o => o.opt.HasValue && curr.Equals(o.opt.Value)); 
                 if ( foundOpt == null )
                 {
                     OnUnknown(curr.ToString());
                 }
                 else
                 {
-                    foundOpt._wasFound = true;
-
                     if ( foundOpt.type == OPTTYPE.BOOL )
                     {
                         foundOpt.OnOptionCallback(null);
@@ -138,8 +148,6 @@ namespace BeeOptLong
             }
             else
             {
-                foundOpt._wasFound = true;
-
                 if (foundOpt.type == OPTTYPE.BOOL)
                 {
                     foundOpt.OnOptionCallback(null);
@@ -182,7 +190,7 @@ namespace BeeOptLong
     {
         private IList<BeeOpts> _data = new List<BeeOpts>();
 
-        public BeeOptsBuilder Add(char opt, string optLong, OPTTYPE type, string desc, OnOption OptionCallback)
+        public BeeOptsBuilder Add(char? opt, string optLong, OPTTYPE type, string desc, OnOption OptionCallback)
         {
             _data.Add(new BeeOpts(opt, optLong, type, desc, OptionCallback));
             return this;

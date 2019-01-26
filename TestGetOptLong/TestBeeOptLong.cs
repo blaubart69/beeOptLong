@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using BeeOptLong;
+using Spi;
 
 namespace TestGetOptLong
 {
