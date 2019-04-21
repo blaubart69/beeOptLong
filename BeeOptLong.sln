@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28010.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeeOptLong", "GetOptLongSharp\BeeOptLong.csproj", "{2BC8D18F-B5E0-4B6D-A60D-84699A24D980}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGetOptLong", "TestGetOptLong\TestGetOptLong.csproj", "{73FFB5E6-06C6-4B51-94A2-3336BAD59DA8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeeOptLong.Test", "TestGetOptLong\BeeOptLong.Test.csproj", "{73FFB5E6-06C6-4B51-94A2-3336BAD59DA8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

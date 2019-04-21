@@ -227,5 +227,88 @@ namespace TestGetOptLong
             Assert.AreEqual("huu", b);
             Assert.AreEqual("und", args.First());
         }
+        [TestMethod]
+        public void unknowOption()
+        {
+            string r = "n/a";
+            string b = null;
+
+            var opts = new BeeOptsBuilder()
+                .Add('r', "req", OPTTYPE.VALUE, "desc", (v) => r = v)
+                .Add('b', "boo", OPTTYPE.VALUE, "desc", (v) => b = v)
+                .GetOpts();
+
+            bool unknownOption = false;
+
+            IList<string> args = BeeOpts.Parse(
+                new string[] { "-j" },
+                opts,
+                OnUnknown: (optname) => unknownOption = true);
+
+            Assert.IsTrue(unknownOption);
+        }
+        [TestMethod]
+        public void shortBoolOptionWithmoreThanOneChar()
+        {
+            bool x = false;
+            List<string> unknownOptions = new List<string>();
+
+            var opts = new BeeOptsBuilder()
+                .Add('x', "req", OPTTYPE.BOOL, "desc", (v) => x = true)
+                .GetOpts();
+
+            IList<string> args = BeeOpts.Parse(
+                new string[] { "-xbumsti" },
+                opts,
+                OnUnknown: (optname) => unknownOptions.Add(optname) );
+
+            Assert.IsTrue(x);
+            CollectionAssert.AreEqual(new string[] { "b", "u", "m", "s", "t", "i" }.ToList(), unknownOptions);
+        }
+        [TestMethod]
+        public void shortBoolFollowedByValue()
+        {
+            List<string> unknownOptions = new List<string>();
+
+            bool b = false;
+            string val = String.Empty;
+
+            var opts = new BeeOptsBuilder()
+                .Add('b', "req", OPTTYPE.BOOL,  "descb", (v) => b = true)
+                .Add('v', "vvv", OPTTYPE.VALUE, "descv", (v) => val = v)
+                .GetOpts();
+
+            IList<string> args = BeeOpts.Parse(
+                new string[] { "-bvbumsti" },
+                opts,
+                OnUnknown: (optname) => unknownOptions.Add(optname));
+
+            CollectionAssert.AreEqual(new string[] { }, unknownOptions);
+            Assert.IsTrue(b);
+            Assert.AreEqual("bumsti", val);
+
+        }
+        [TestMethod]
+        public void shortBoolFollowedByValueInNextArg()
+        {
+            List<string> unknownOptions = new List<string>();
+
+            bool b = false;
+            string val = String.Empty;
+
+            var opts = new BeeOptsBuilder()
+                .Add('b', "req", OPTTYPE.BOOL, "descb", (v) => b = true)
+                .Add('v', "vvv", OPTTYPE.VALUE, "descv", (v) => val = v)
+                .GetOpts();
+
+            IList<string> args = BeeOpts.Parse(
+                new string[] { "-bv", "bumsti" },
+                opts,
+                OnUnknown: (optname) => unknownOptions.Add(optname));
+
+            CollectionAssert.AreEqual(new string[] { }, unknownOptions);
+            Assert.IsTrue(b);
+            Assert.AreEqual("bumsti", val);
+        }
     }
 }
