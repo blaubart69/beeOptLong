@@ -38,7 +38,7 @@ namespace Spi
              -n, --dryrun               show what would be deleted
              -h, --help                 show this message and exit
             */
-            foreach (BeeOpts o in opts)
+            foreach ( BeeOpts o in opts )
             {
                 string OneCharOpt = o.opt.HasValue ? $"-{o.opt.Value}," : "   ";
                 string valueOpt = o.type == OPTTYPE.VALUE ? "=VALUE" : String.Empty;
@@ -96,7 +96,7 @@ namespace Spi
             {
                 char curr = currArg[shotOptIdx];
 
-                BeeOpts foundOpt = opts.FirstOrDefault(o => o.opt == curr);
+                BeeOpts foundOpt = opts.FirstOrDefault(o => o.opt.HasValue && curr.Equals(o.opt.Value)); 
                 if ( foundOpt == null )
                 {
                     OnUnknown(curr.ToString());
@@ -191,7 +191,7 @@ namespace Spi
     {
         private IList<BeeOpts> _data = new List<BeeOpts>();
 
-        public BeeOptsBuilder Add(char opt, string optLong, OPTTYPE type, string desc, OnOption OptionCallback)
+        public BeeOptsBuilder Add(char? opt, string optLong, OPTTYPE type, string desc, OnOption OptionCallback)
         {
             _data.Add(new BeeOpts(opt, optLong, type, desc, OptionCallback));
             return this;
